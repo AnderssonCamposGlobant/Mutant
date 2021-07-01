@@ -64,7 +64,15 @@ namespace MutantProgram
             var mensaje = ((Newtonsoft.Json.Linq.JContainer)jsonBody).First;
             var mensajeAWS = ((Newtonsoft.Json.Linq.JValue)((Newtonsoft.Json.Linq.JContainer)mensaje).First).Value;
             Console.WriteLine("statusCode: " + mutantResponse.StatusCode + ", Respuesta: " + mensajeAWS, Console.ForegroundColor);
-            return mutante;
+
+            Console.WriteLine("Conectando con servicio Dynamodb en AWS...", Console.ForegroundColor);
+            var insertDynamodb = CallServiceAWS("https://m6ns7kukna.execute-api.us-east-2.amazonaws.com/dynamodb", json);
+            Object jsonBodyDynamo = JObject.Parse(insertDynamodb.Body);
+            var mensajeDynamo = ((Newtonsoft.Json.Linq.JContainer)jsonBodyDynamo).First;
+            var mensajeAWSDynamo = ((Newtonsoft.Json.Linq.JValue)((Newtonsoft.Json.Linq.JContainer)mensajeDynamo).First).Value;
+            Console.WriteLine("Respuesta Dynamodb" + mensajeAWSDynamo, Console.ForegroundColor);
+
+            return mutantResponse.StatusCode==200 ? true : false;
         }
 
         public static RootResponse CallServiceAWS(string serviceUrl, object jsonRequest)
